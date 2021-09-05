@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: hello-deployment
+ labels:
+   role: app
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     role: app
+ template:
+   metadata:
+     labels:
+       role: app
+   spec:
+     containers:
+     - name: app
+       image: flask-sample:latest
+       imagePullPolicy: IfNotPresent
+     - name: web
+       image: nginxsidecar:latest
+       imagePullPolicy: IfNotPresent
+       
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: hello-svc
+spec:
+ selector:
+   role: app
+ ports:
+   - protocol: TCP
+     port: 80
+     targetPort: 80
+     nodePort: 32001
+ type: NodePort
